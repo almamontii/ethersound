@@ -590,6 +590,9 @@ document.addEventListener('mousemove', function(e) {
             card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
         }
     });
+    
+    // efecto de ondas en el hero al mover el mouse
+    createRippleEffect(e);
 });
 
 // resetear transformaciones cuando el mouse sale
@@ -598,4 +601,162 @@ document.addEventListener('mouseleave', function() {
     cards.forEach(card => {
         card.style.transform = '';
     });
+});
+
+// crear efecto de ondas interactivas
+function createRippleEffect(e) {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+    
+    const rect = hero.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // solo crear ondas si el mouse está sobre el hero
+    if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple-effect';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        
+        // estilos del ripple
+        Object.assign(ripple.style, {
+            position: 'absolute',
+            width: '4px',
+            height: '4px',
+            background: 'rgba(255, 107, 107, 0.6)',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+            zIndex: '1',
+            animation: 'ripple-expand 2s ease-out forwards'
+        });
+        
+        hero.appendChild(ripple);
+        
+        // remover el ripple después de la animación
+        setTimeout(() => {
+            if (ripple.parentNode) {
+                ripple.parentNode.removeChild(ripple);
+            }
+        }, 2000);
+    }
+}
+
+// agregar animación de ripple al CSS dinámicamente
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = `
+    @keyframes ripple-expand {
+        0% {
+            width: 4px;
+            height: 4px;
+            opacity: 1;
+        }
+        100% {
+            width: 100px;
+            height: 100px;
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(rippleStyle);
+
+// efecto de partículas dinámicas al hacer clic
+document.addEventListener('click', function(e) {
+    createParticleBurst(e.clientX, e.clientY);
+});
+
+function createParticleBurst(x, y) {
+    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
+    
+    for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'burst-particle';
+        
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const angle = (i / 8) * Math.PI * 2;
+        const velocity = 50 + Math.random() * 100;
+        
+        Object.assign(particle.style, {
+            position: 'fixed',
+            left: x + 'px',
+            top: y + 'px',
+            width: '6px',
+            height: '6px',
+            background: color,
+            borderRadius: '50%',
+            pointerEvents: 'none',
+            zIndex: '10000',
+            animation: `particle-burst 1s ease-out forwards`,
+            '--angle': angle + 'rad',
+            '--velocity': velocity + 'px'
+        });
+        
+        document.body.appendChild(particle);
+        
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 1000);
+    }
+}
+
+// agregar animación de partículas al CSS dinámicamente
+const particleStyle = document.createElement('style');
+particleStyle.textContent = `
+    @keyframes particle-burst {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(calc(cos(var(--angle)) * var(--velocity)), calc(sin(var(--angle)) * var(--velocity))) scale(0);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(particleStyle);
+
+// efecto de pulso en el logo
+function pulseLogo() {
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        logo.style.animation = 'pulse 2s ease-in-out infinite';
+    }
+}
+
+// agregar animación de pulso al CSS
+const pulseStyle = document.createElement('style');
+pulseStyle.textContent = `
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+`;
+document.head.appendChild(pulseStyle);
+
+// iniciar efectos al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(pulseLogo, 1000);
+    
+    // crear ondas adicionales dinámicamente
+    setInterval(() => {
+        const waveContainer = document.querySelector('.wave-container');
+        if (waveContainer && Math.random() > 0.7) {
+            const extraWave = document.createElement('div');
+            extraWave.className = 'wave extra-wave';
+            extraWave.style.animationDelay = '0s';
+            waveContainer.appendChild(extraWave);
+            
+            setTimeout(() => {
+                if (extraWave.parentNode) {
+                    extraWave.parentNode.removeChild(extraWave);
+                }
+            }, 4000);
+        }
+    }, 2000);
 });
